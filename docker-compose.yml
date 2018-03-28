@@ -1,0 +1,25 @@
+version: '2.1'
+services:
+  web:
+    build: .
+    environment:
+    ports:
+      - "80:80"
+    depends_on:
+      db:
+        condition: service_healthy
+      solr:
+        condition: service_started
+  db:
+    image: mdillon/postgis:9.5
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
